@@ -14,7 +14,7 @@ CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 AUTHORIZATION_BASE_URL = 'https://accounts.google.com/o/oauth2/auth'
 TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
-REDIRECT_URI = 'http://meudindinz-gkswcxjh3pge74l9w6bwvq.streamlit.app'  # Certifique-se de que coincide com o console
+REDIRECT_URI = 'https://meudindinz-gkswcxjh3pge74l9w6bwvq.streamlit.app/'  # Certifique-se de que coincide com o console
 
 # Scope de permissão
 SCOPE = ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
