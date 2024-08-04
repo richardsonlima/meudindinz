@@ -3,12 +3,13 @@ import json
 import streamlit as st
 from google_sheets import connect_to_google_sheets, save_data_to_sheet
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
 # Definir o nome da planilha do Google Sheets
-SHEET_NAME = "meu_dindinz_planilha"  
+SHEET_NAME = "meu_dindinz_planilha"  # Substitua "nome_da_sua_planilha" pelo nome real da sua planilha
 
 # Função para cadastrar transações
 def add_transaction(transaction_type, category, description, amount, date):
@@ -30,23 +31,20 @@ def transaction_interface():
         
         # Conectar à planilha do Google Sheets
         try:
-            # Conectar à planilha e obter os dados existentes
             data = connect_to_google_sheets(SHEET_NAME)
             st.info("Conectado à planilha com sucesso!")
             
-            # Formatar os dados existentes e a nova transação para salvar
-            headers = ["Data", "Tipo", "Categoria", "Descrição", "Valor"]
-            
-            # Verifica se há dados existentes e adiciona a nova transação
+            # Adicionar a nova transação aos dados existentes
             if isinstance(data, list) and len(data) > 0:
-                # Adiciona a nova transação aos dados existentes
-                updated_data = [list(item.values()) for item in data] + [transaction]
+                # Adiciona a nova transação ao final dos dados existentes
+                data.append(transaction)
             else:
-                # Caso não haja dados, inicializa com o cabeçalho e a nova transação
-                updated_data = [headers, transaction]
-            
+                # Inicializa com cabeçalhos e a nova transação
+                headers = ["Data", "Tipo", "Categoria", "Descrição", "Valor"]
+                data = [headers, transaction]
+
             # Salvar a transação na planilha do Google Sheets
-            if save_data_to_sheet(SHEET_NAME, updated_data):
+            if save_data_to_sheet(SHEET_NAME, data):
                 st.success("Transação adicionada e salva na planilha com sucesso!")
         except Exception as e:
             st.error(f"Erro ao acessar a planilha: {e}")

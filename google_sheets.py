@@ -7,6 +7,8 @@ import logging
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
+sheet_name = "meu_dindinz_planilha"  # Substitua "nome_da_sua_planilha" pelo nome real da sua planilha
+
 def connect_to_google_sheets(sheet_name):
     try:
         logging.info("Starting connection to Google Sheets...")
