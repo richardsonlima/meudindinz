@@ -18,8 +18,8 @@ from dotenv import load_dotenv
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# Definir o nome da planilha do Google Sheets
-sheet_name = os.environ.get("SHEET_NAME")
+# Definir o nome da planilha do Google Sheets com um valor padrão
+sheet_name = os.environ.get("SHEET_NAME", "Nome_Padrao_da_Sua_Planilha")  # Substitua pelo nome padrão da sua planilha
 
 # Configurar o ambiente do Google OAuth
 def load_google_oauth():
@@ -79,7 +79,8 @@ def show_main_app():
     selection = st.sidebar.radio("Ir para", ["Transações", "Visão Geral do Orçamento", "Relatórios Financeiros",
                                              "Metas Financeiras", "Notificações", "Segurança", "Integração com Google Sheets"])
 
-    st.sidebar.write(f"Usuário: {st.session_state['user_info']['name']}")
+    if 'user_info' in st.session_state:
+        st.sidebar.write(f"Usuário: {st.session_state['user_info']['name']}")
 
     if selection == "Transações":
         transactions.transaction_interface()
@@ -100,6 +101,7 @@ def show_main_app():
         google_sheets_interface()
 
 def google_sheets_interface():
+    global sheet_name
     sheet_name = st.text_input("Nome da Planilha no Google Sheets", sheet_name)
 
     if st.button("Conectar ao Google Sheets"):
