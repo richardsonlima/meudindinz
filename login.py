@@ -1,23 +1,9 @@
 import streamlit as st
-import json
-import requests
+from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 import os
-
-# Importar os módulos
-import transactions
-import budget_overview
-import financial_reports
-import financial_goals
-import notifications
-import security
-import google_sheets
-
-from dotenv import load_dotenv
-
-# Carregar variáveis de ambiente do arquivo .env
-load_dotenv()
-
+import json
+import requests
 
 # Configurar o ambiente do Google OAuth
 def load_google_oauth():
@@ -41,14 +27,22 @@ def google_login():
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "openid"
             ],
-            redirect_uri= os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
+            redirect_uri=os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
         )
 
         authorization_url, state = flow.authorization_url(prompt='consent')
 
-        st.write("## Bem-vindo ao Meu DinDinz")
-        st.write("Por favor, faça login para continuar.")
-        st.write(f"[Entrar com Google]({authorization_url})")
+        # Estrutura HTML do botão
+        st.markdown(f"""
+            <div class="login-container">
+                <h1>Bem-vindo ao Meu DinDinz</h1>
+                <p>Por favor, faça login para continuar.</p>
+                <a href="{authorization_url}" class="google-button">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Logo">
+                    Entrar com Google
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
 
         # Obter o código de autorização a partir dos parâmetros da URL
         query_params = st.experimental_get_query_params()
@@ -72,36 +66,84 @@ def google_login():
                 st.error(f"Erro ao obter token: {e}")
     return False
 
-def show_main_app():
-    st.sidebar.title("Navegação")
-    selection = st.sidebar.radio("Ir para", ["Transações", "Visão Geral do Orçamento", "Relatórios Financeiros",
-                                             "Metas Financeiras", "Notificações", "Segurança", "Integração com Google Sheets"])
+def main():
+    st.set_page_config(
+        page_title="MeuDinDinz Login",
+        layout="centered"
+    )
 
-    st.sidebar.write(f"Usuário: {st.session_state['user_info']['name']}")
+    # CSS styles
+    st.markdown("""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-    if selection == "Transações":
-        transactions.transaction_interface()
-    elif selection == "Visão Geral do Orçamento":
-        transactions_data = []  # Substitua pelos dados reais
-        budget_overview.budget_overview(transactions_data)
-    elif selection == "Relatórios Financeiros":
-        transactions_data = []  # Substitua pelos dados reais
-        financial_reports.financial_reports(transactions_data)
-    elif selection == "Metas Financeiras":
-        financial_goals.financial_goals_interface()
-    elif selection == "Notificações":
-        notifications.notifications_interface()
-    elif selection == "Segurança":
-        security.security_interface()
-    elif selection == "Integração com Google Sheets":
-        google_sheets.google_sheets_interface()
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            margin: auto;
+        }
+
+        .login-container h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .login-container p {
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .google-button {
+            background-color: #4285f4;
+            color: white;
+            font-size: 18px;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-button:hover {
+            background-color: #357ae8;
+            transform: translateY(-2px);
+        }
+
+        .google-button img {
+            width: 20px;
+            height: 20px;
+        }
+
+        </style>
+    """, unsafe_allow_html=True)
+
+    if 'user_info' not in st.session_state:
+        google_login()
+    else:
+        user_info = st.session_state['user_info']
+        st.success(f"Bem-vindo, {user_info['name']}!")
+        st.image(user_info['picture'], width=100)
+        st.markdown(f"Email: {user_info['email']}")
 
 if __name__ == "__main__":
-    st.set_page_config(page_title="Meu DinDinz", layout="wide")
-    
-    # Checar se o usuário já está logado
-    if 'user_info' not in st.session_state:
-        if google_login():
-            show_main_app()
-    else:
-        show_main_app()
+    main()
