@@ -35,6 +35,7 @@ def set_custom_css():
                 background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
                 margin: 0;
                 padding: 0;
+                height: 100vh;
             }
 
             /* Container principal */
@@ -144,6 +145,7 @@ def google_login():
 
         authorization_url, state = flow.authorization_url(prompt='consent')
 
+        # Renderizar a interface de login
         st.markdown('<div class="main-container">', unsafe_allow_html=True)
         st.markdown('<div class="login-box fade-in">', unsafe_allow_html=True)
         st.markdown("<h2>Bem-vindo ao Meu DinDinz</h2>", unsafe_allow_html=True)
