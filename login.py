@@ -3,6 +3,7 @@ import json
 import requests
 from google_auth_oauthlib.flow import Flow
 import os
+import base64
 
 # Importar os módulos
 import transactions
@@ -38,7 +39,7 @@ def google_login():
             redirect_uri=os.environ.get("APP_URI")  # URL correta que você está usando
         )
 
-        authorization_url, state = flow.authorization_url(prompt='consent')
+        authorization_url, state = flow.authorization_url(prompt='consent', include_granted_scopes='true')
 
         # Estilo CSS para a tela de login
         css_style = """
@@ -59,6 +60,7 @@ def google_login():
                 padding: 20px;
                 max-width: 400px;
                 margin: auto;
+                text-align: center;
             }
             .login-header {
                 font-size: 2.5rem;
@@ -75,6 +77,9 @@ def google_login():
                 border-radius: 4px;
                 cursor: pointer;
                 transition: background-color 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             .google-button:hover {
                 background-color: #357ae8;
@@ -93,12 +98,20 @@ def google_login():
                 font-size: 0.8rem;
                 color: #aaa;
             }
+            .logo {
+                width: 150px;
+                margin-bottom: 20px;
+            }
         </style>
         """
+
+        # Imagem da logo em base64
+        logo_base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAACtKy84AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAA..."
 
         # HTML para a tela de login
         login_html = f"""
         <div class="login-container">
+            <img src="{logo_base64}" alt="Logo Meu DinDinz" class="logo">
             <h1 class="login-header">Meu DinDinz</h1>
             <button class="google-button" onclick="window.location.href='{authorization_url}'">
                 <img class="google-icon" src="https://www.google.com/favicon.ico" alt="Google icon" width="20" height="20">
