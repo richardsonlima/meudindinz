@@ -11,13 +11,15 @@ import financial_reports
 import financial_goals
 import notifications
 import security
-import google_sheets
+from google_sheets import connect_to_google_sheets  # Importando a função corretamente
 
 from dotenv import load_dotenv
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
+# Definir o nome da planilha do Google Sheets com um valor padrão
+sheet_name = os.environ.get("SHEET_NAME", "Nome_Padrao_da_Sua_Planilha")  # Substitua pelo nome padrão da sua planilha
 
 # Configurar o ambiente do Google OAuth
 def load_google_oauth():
@@ -41,7 +43,7 @@ def google_login():
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "openid"
             ],
-            redirect_uri= os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
+            redirect_uri=os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
         )
 
         authorization_url, state = flow.authorization_url(prompt='consent')
@@ -77,7 +79,8 @@ def show_main_app():
     selection = st.sidebar.radio("Ir para", ["Transações", "Visão Geral do Orçamento", "Relatórios Financeiros",
                                              "Metas Financeiras", "Notificações", "Segurança", "Integração com Google Sheets"])
 
-    st.sidebar.write(f"Usuário: {st.session_state['user_info']['name']}")
+    if 'user_info' in st.session_state:
+        st.sidebar.write(f"Usuário: {st.session_state['user_info']['name']}")
 
     if selection == "Transações":
         transactions.transaction_interface()
@@ -94,7 +97,25 @@ def show_main_app():
     elif selection == "Segurança":
         security.security_interface()
     elif selection == "Integração com Google Sheets":
-        google_sheets.google_sheets_interface()
+        # Chamar a função de integração com o Google Sheets
+        google_sheets_interface()
+
+def google_sheets_interface():
+    global sheet_name
+    sheet_name = st.text_input("Nome da Planilha no Google Sheets", sheet_name)
+
+    if st.button("Conectar ao Google Sheets"):
+        try:
+            data = connect_to_google_sheets(sheet_name)
+            st.write("Dados da Planilha:", data)
+        except FileNotFoundError as fnf_err:
+            st.error(fnf_err)
+        except ConnectionError as conn_err:
+            st.error(conn_err)
+        except RuntimeError as run_err:
+            st.error(run_err)
+        except Exception as e:
+            st.error(f"Erro: {e}")
 
 if __name__ == "__main__":
     st.set_page_config(page_title="Meu DinDinz", layout="wide")

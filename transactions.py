@@ -3,11 +3,13 @@ import json
 import streamlit as st
 from google_sheets import connect_to_google_sheets, save_data_to_sheet
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
-sheet_name = os.getenv('PLANILHA_DINDINZ')
+# Definir o nome da planilha do Google Sheets
+sheet_name = os.environ.get("SHEET_NAME")
 
 # Função para cadastrar transações
 def add_transaction(transaction_type, category, description, amount, date):
@@ -27,14 +29,25 @@ def transaction_interface():
     if st.button("Adicionar Transação"):
         transaction = add_transaction(transaction_type, category, description, amount, date)
         
-        # Salvar a transação na planilha do Google Sheets
-        sheet_name = "Meu DinDinz"  # Substitua pelo nome real da planilha
-        sheet = connect_to_google_sheets(sheet_name)
-        
-        if sheet:
-            save_data_to_sheet(sheet, transaction)
-            st.success("Transação adicionada e salva na planilha com sucesso!")
+        # Conectar à planilha do Google Sheets
+        try:
+            data = connect_to_google_sheets(sheet_name)
+            st.info("Conectado à planilha com sucesso!")
+            
+            # Adicionar a nova transação aos dados existentes
+            if isinstance(data, list) and len(data) > 0:
+                # Adiciona a nova transação ao final dos dados existentes
+                data.append(transaction)
+            else:
+                # Inicializa com cabeçalhos e a nova transação
+                headers = ["Data", "Tipo", "Categoria", "Descrição", "Valor"]
+                data = [headers, transaction]
+
+            # Salvar a transação na planilha do Google Sheets
+            if save_data_to_sheet(sheet_name, data):
+                st.success("Transação adicionada e salva na planilha com sucesso!")
+        except Exception as e:
+            st.error(f"Erro ao acessar a planilha: {e}")
 
 if __name__ == "__main__":
     transaction_interface()
-
