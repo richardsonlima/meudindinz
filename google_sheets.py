@@ -15,7 +15,10 @@ def connect_to_google_sheets(sheet_name):
         creds_info = json.loads(creds_json)
 
         # Autenticação com credenciais
-        creds = Credentials.from_service_account_info(creds_info, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+        creds = Credentials.from_service_account_info(
+            creds_info,
+            scopes=["https://www.googleapis.com/auth/spreadsheets"]
+        )
 
         # Autenticando com gspread
         client = gspread.authorize(creds)
@@ -50,7 +53,10 @@ def save_data_to_sheet(sheet_name, data):
         creds_info = json.loads(creds_json)
 
         # Autenticação com credenciais
-        creds = Credentials.from_service_account_info(creds_info, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+        creds = Credentials.from_service_account_info(
+            creds_info,
+            scopes=["https://www.googleapis.com/auth/spreadsheets"]
+        )
 
         # Autenticando com gspread
         client = gspread.authorize(creds)
