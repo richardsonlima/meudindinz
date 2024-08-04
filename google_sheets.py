@@ -1,31 +1,27 @@
 import json
 import os
-from dotenv import load_dotenv
 import streamlit as st
+from dotenv import load_dotenv
+from google.oauth2 import service_account
 import gspread
-from google.oauth2.service_account import Credentials
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
+sheet_name = os.getenv('PLANILHA_DINDINZ')
+# Access the secrets from the secrets.toml
+service_account_info = st.secrets["google_service_account"]
+
+# Create credentials object using service account info
+credentials = service_account.Credentials.from_service_account_info(
+    service_account_info
+)
+
+# Use gspread to connect to Google Sheets
 def connect_to_google_sheets(sheet_name):
     try:
-        # Carregar credenciais da variável de ambiente
-        sheet_name = os.getenv('PLANILHA_DINDINZ')
-        credentials_info = json.loads(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON', '{}'))
-        credentials = Credentials.from_service_account_info(
-            credentials_info,
-            scopes=[
-                'https://www.googleapis.com/auth/spreadsheets',
-                'https://www.googleapis.com/auth/drive'
-            ]
-        )
-        
-        # Autorizar o cliente gspread
         client = gspread.authorize(credentials)
-        
-        # Abrir a planilha especificada
-        sheet = client.open(sheet_name).sheet1  # Abrir a primeira folha da planilha
+        sheet = client.open(sheet_name).sheet1
         return sheet
     except gspread.exceptions.SpreadsheetNotFound:
         st.error(f"Planilha '{sheet_name}' não encontrada. Verifique o nome e tente novamente.")
@@ -33,14 +29,6 @@ def connect_to_google_sheets(sheet_name):
         st.error(f"Erro ao conectar ao Google Sheets: {e}")
         return None
 
-def save_data_to_sheet(sheet, data):
-    try:
-        sheet.append_row(data)
-        st.success("Dados salvos com sucesso no Google Sheets!")
-    except Exception as e:
-        st.error(f"Erro ao salvar dados no Google Sheets: {e}")
-
-# Defina a função google_sheets_interface se ela for necessária
 def google_sheets_interface():
     st.title("Integração com Google Sheets")
     
@@ -49,4 +37,8 @@ def google_sheets_interface():
         sheet = connect_to_google_sheets(sheet_name)
         if sheet:
             st.success("Conectado com sucesso!")
-            st.write(sheet.get_all_records())  # Exibir todos os registros como exemplo
+            st.write(sheet.get_all_records())
+
+# Teste de conexão
+if __name__ == "__main__":
+    google_sheets_interface()
