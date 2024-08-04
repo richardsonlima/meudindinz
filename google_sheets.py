@@ -1,13 +1,13 @@
 import streamlit as st
 import os
 import json
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 from google.oauth2 import service_account
 import gspread
 
 # Carregar variáveis de ambiente do arquivo .env
-load_dotenv()
+#load_dotenv()
 
 # Acessando variáveis de ambiente
 sheet_name = os.getenv('PLANILHA_DINDINZ')
