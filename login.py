@@ -1,9 +1,23 @@
 import streamlit as st
-from google.oauth2 import id_token
-from google_auth_oauthlib.flow import Flow
-import os
 import json
 import requests
+from google_auth_oauthlib.flow import Flow
+import os
+
+# Importar os módulos
+import transactions
+import budget_overview
+import financial_reports
+import financial_goals
+import notifications
+import security
+import google_sheets
+
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
+
 
 # Configurar o ambiente do Google OAuth
 def load_google_oauth():
@@ -14,6 +28,7 @@ def load_google_oauth():
     except Exception as e:
         st.error(f"Erro ao carregar as credenciais do Google OAuth: {e}")
         return None
+
 
 # Função para autenticação do Google
 def google_login():
@@ -66,11 +81,34 @@ def google_login():
                 st.error(f"Erro ao obter token: {e}")
     return False
 
-def main():
-    st.set_page_config(
-        page_title="MeuDinDinz Login",
-        layout="centered"
-    )
+
+def show_main_app():
+    st.sidebar.title("Navegação")
+    selection = st.sidebar.radio("Ir para", ["Transações", "Visão Geral do Orçamento", "Relatórios Financeiros",
+                                             "Metas Financeiras", "Notificações", "Segurança", "Integração com Google Sheets"])
+
+    st.sidebar.write(f"Usuário: {st.session_state['user_info']['name']}")
+
+    if selection == "Transações":
+        transactions.transaction_interface()
+    elif selection == "Visão Geral do Orçamento":
+        transactions_data = []  # Substitua pelos dados reais
+        budget_overview.budget_overview(transactions_data)
+    elif selection == "Relatórios Financeiros":
+        transactions_data = []  # Substitua pelos dados reais
+        financial_reports.financial_reports(transactions_data)
+    elif selection == "Metas Financeiras":
+        financial_goals.financial_goals_interface()
+    elif selection == "Notificações":
+        notifications.notifications_interface()
+    elif selection == "Segurança":
+        security.security_interface()
+    elif selection == "Integração com Google Sheets":
+        google_sheets.google_sheets_interface()
+
+
+if __name__ == "__main__":
+    st.set_page_config(page_title="Meu DinDinz", layout="wide")
 
     # CSS styles
     st.markdown("""
@@ -137,13 +175,9 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
+    # Checar se o usuário já está logado
     if 'user_info' not in st.session_state:
-        google_login()
+        if google_login():
+            show_main_app()
     else:
-        user_info = st.session_state['user_info']
-        st.success(f"Bem-vindo, {user_info['name']}!")
-        st.image(user_info['picture'], width=100)
-        st.markdown(f"Email: {user_info['email']}")
-
-if __name__ == "__main__":
-    main()
+        show_main_app()
