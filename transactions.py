@@ -7,8 +7,6 @@ from dotenv import load_dotenv
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
-sheet_name = os.getenv('PLANILHA_DINDINZ')
-
 # Função para cadastrar transações
 def add_transaction(transaction_type, category, description, amount, date):
     # Retorna a transação formatada como lista para ser salva na planilha
@@ -28,7 +26,7 @@ def transaction_interface():
         transaction = add_transaction(transaction_type, category, description, amount, date)
         
         # Salvar a transação na planilha do Google Sheets
-        sheet_name = sheet_name  # Substitua pelo nome real da planilha
+        sheet_name = os.getenv('PLANILHA_DINDINZ')
         sheet = connect_to_google_sheets(sheet_name)
         
         if sheet:
