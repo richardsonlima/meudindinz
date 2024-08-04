@@ -13,13 +13,7 @@ import notifications
 import security
 import google_sheets
 
-from dotenv import load_dotenv
-
-# Carregar variáveis de ambiente do arquivo .env
-load_dotenv()
-
-
-# Configurar o ambiente do Google OAuth
+# Função para carregar as credenciais do Google OAuth
 def load_google_oauth():
     try:
         # Carregar credenciais de uma variável de ambiente
@@ -41,14 +35,83 @@ def google_login():
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "openid"
             ],
-            redirect_uri= os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
+            redirect_uri=os.environ.get("APP_URI")  # URL correta que você está usando
         )
 
         authorization_url, state = flow.authorization_url(prompt='consent')
 
-        st.write("## Bem-vindo ao Meu DinDinz")
-        st.write("Por favor, faça login para continuar.")
-        st.write(f"[Entrar com Google]({authorization_url})")
+        # Estilo CSS para a tela de login
+        css_style = """
+        <style>
+            body {
+                background-color: #f4f4f9;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            .login-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background: linear-gradient(145deg, #e4e4e8, #ffffff);
+                box-shadow: 10px 10px 20px #cbcbcf, -10px -10px 20px #ffffff;
+                border-radius: 12px;
+                padding: 20px;
+                max-width: 400px;
+                margin: auto;
+            }
+            .login-header {
+                font-size: 2.5rem;
+                color: #333;
+                margin-bottom: 20px;
+            }
+            .google-button {
+                background-color: #4285f4;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            .google-button:hover {
+                background-color: #357ae8;
+            }
+            .google-icon {
+                vertical-align: middle;
+                margin-right: 8px;
+            }
+            .sub-text {
+                color: #666;
+                font-size: 0.9rem;
+                margin-top: 15px;
+            }
+            .footer {
+                margin-top: 30px;
+                font-size: 0.8rem;
+                color: #aaa;
+            }
+        </style>
+        """
+
+        # HTML para a tela de login
+        login_html = f"""
+        <div class="login-container">
+            <h1 class="login-header">Meu DinDinz</h1>
+            <button class="google-button" onclick="window.location.href='{authorization_url}'">
+                <img class="google-icon" src="https://www.google.com/favicon.ico" alt="Google icon" width="20" height="20">
+                Entrar com Google
+            </button>
+            <div class="sub-text">Acesse sua conta com segurança</div>
+            <div class="footer">© 2024 Meu DinDinz. Todos os direitos reservados.</div>
+        </div>
+        """
+
+        # Renderizar o CSS e HTML
+        st.markdown(css_style, unsafe_allow_html=True)
+        st.markdown(login_html, unsafe_allow_html=True)
 
         # Obter o código de autorização a partir dos parâmetros da URL
         query_params = st.experimental_get_query_params()
@@ -67,11 +130,13 @@ def google_login():
 
                 st.session_state['user_info'] = user_info  # Armazenar informações do usuário na sessão
                 st.success("Login realizado com sucesso!")
+                st.experimental_rerun()  # Redirecionar após login
                 return True
             except Exception as e:
                 st.error(f"Erro ao obter token: {e}")
     return False
 
+# Função para exibir a aplicação principal
 def show_main_app():
     st.sidebar.title("Navegação")
     selection = st.sidebar.radio("Ir para", ["Transações", "Visão Geral do Orçamento", "Relatórios Financeiros",
