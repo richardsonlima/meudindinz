@@ -26,7 +26,7 @@ def connect_to_google_sheets(sheet_name):
         # Authenticate with credentials
         creds = Credentials.from_service_account_info(
             creds_info,
-            scopes=["https://www.googleapis.com/auth/spreadsheets"]
+            scopes=["https://www.googleapis.com/auth/spreadsheets", "https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
         )
         
         logging.info("Authentication credentials configured.")
@@ -77,7 +77,7 @@ def save_data_to_sheet(sheet_name, data):
         # Authenticate with credentials
         creds = Credentials.from_service_account_info(
             creds_info,
-            scopes=["https://www.googleapis.com/auth/spreadsheets"]
+            scopes=["https://www.googleapis.com/auth/spreadsheets", "https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
         )
         
         logging.info("Authentication credentials configured.")
