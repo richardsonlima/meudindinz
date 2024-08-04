@@ -11,6 +11,8 @@ def connect_to_google_sheets(sheet_name):
     try:
         logging.info("Iniciando a conexão com o Google Sheets...")
 
+        sheet_name = os.environ.get("PLANILHA_DINDINZ")
+
         # Obter o JSON de credenciais da variável de ambiente
         creds_json = os.environ.get("GOOGLE_SHEETS_CREDENTIALS_JSON")
         if not creds_json:
