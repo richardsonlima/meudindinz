@@ -3,6 +3,7 @@ import json
 import requests
 from google_auth_oauthlib.flow import Flow
 import os
+from dotenv import load_dotenv
 
 # Importar os módulos
 import transactions
@@ -13,11 +14,8 @@ import notifications
 import security
 import google_sheets
 
-from dotenv import load_dotenv
-
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
-
 
 # Configurar o ambiente do Google OAuth
 def load_google_oauth():
@@ -28,7 +26,6 @@ def load_google_oauth():
     except Exception as e:
         st.error(f"Erro ao carregar as credenciais do Google OAuth: {e}")
         return None
-
 
 # Função para autenticação do Google
 def google_login():
@@ -50,12 +47,17 @@ def google_login():
         # Estrutura HTML do botão
         st.markdown(f"""
             <div class="login-container">
-                <h1>Bem-vindo ao Meu DinDinz</h1>
-                <p>Por favor, faça login para continuar.</p>
-                <a href="{authorization_url}" class="google-button">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Logo">
-                    Entrar com Google
-                </a>
+                <div class="illustration">
+                    <img src="https://via.placeholder.com/600x400" alt="Ilustração">
+                </div>
+                <div class="login-form">
+                    <h1>Bem-vindo ao Meu DinDinz</h1>
+                    <p>Por favor, faça login para continuar.</p>
+                    <a href="{authorization_url}" class="google-button">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Logo">
+                        Entrar com Google
+                    </a>
+                </div>
             </div>
         """, unsafe_allow_html=True)
 
@@ -81,14 +83,22 @@ def google_login():
                 st.error(f"Erro ao obter token: {e}")
     return False
 
-
+# Função principal para mostrar a aplicação após o login
 def show_main_app():
     st.sidebar.title("Navegação")
-    selection = st.sidebar.radio("Ir para", ["Transações", "Visão Geral do Orçamento", "Relatórios Financeiros",
-                                             "Metas Financeiras", "Notificações", "Segurança", "Integração com Google Sheets"])
+    selection = st.sidebar.radio("Ir para", [
+        "Transações",
+        "Visão Geral do Orçamento",
+        "Relatórios Financeiros",
+        "Metas Financeiras",
+        "Notificações",
+        "Segurança",
+        "Integração com Google Sheets"
+    ])
 
     st.sidebar.write(f"Usuário: {st.session_state['user_info']['name']}")
 
+    # Chamadas de função para diferentes seções
     if selection == "Transações":
         transactions.transaction_interface()
     elif selection == "Visão Geral do Orçamento":
@@ -106,7 +116,6 @@ def show_main_app():
     elif selection == "Integração com Google Sheets":
         google_sheets.google_sheets_interface()
 
-
 if __name__ == "__main__":
     st.set_page_config(page_title="Meu DinDinz", layout="wide")
 
@@ -122,25 +131,46 @@ if __name__ == "__main__":
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
 
         .login-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             background: #ffffff;
-            padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 400px;
+            max-width: 900px;
             width: 100%;
             margin: auto;
+            overflow: hidden;
         }
 
-        .login-container h1 {
+        .illustration {
+            flex: 1;
+            background: #f0f0f0;
+            padding: 40px;
+        }
+
+        .illustration img {
+            width: 100%;
+            height: auto;
+        }
+
+        .login-form {
+            flex: 1;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .login-form h1 {
             color: #333;
             margin-bottom: 20px;
+            font-weight: 500;
         }
 
-        .login-container p {
+        .login-form p {
             color: #555;
             margin-bottom: 30px;
         }
