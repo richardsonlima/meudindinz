@@ -1,22 +1,16 @@
-import logging
-import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
 import os
 import json
+import logging
 
-# Configuração básica do logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[logging.StreamHandler()]
-)
+# Configuração do logger
+logging.basicConfig(level=logging.INFO)
 
-# Função para conectar ao Google Sheets
 def connect_to_google_sheets(sheet_name):
-    logging.info("Iniciando a conexão com o Google Sheets...")
-    
     try:
+        logging.info("Iniciando a conexão com o Google Sheets...")
+
         # Obter o JSON de credenciais da variável de ambiente
         creds_json = os.environ.get("GOOGLE_SHEETS_CREDENTIALS_JSON")
         if not creds_json:
@@ -31,7 +25,7 @@ def connect_to_google_sheets(sheet_name):
         # Autenticação com credenciais
         creds = Credentials.from_service_account_info(
             creds_info,
-            scopes=["https://www.googleapis.com/auth/spreadsheets"]
+            scopes=["https://www.googleapis.com/auth/spreadsheets"]  # Certifique-se de que este escopo está correto
         )
         
         logging.info("Credenciais de autenticação configuradas.")
@@ -65,9 +59,9 @@ def connect_to_google_sheets(sheet_name):
         raise RuntimeError(f"Erro ao conectar ao Google Sheets: {e}")
 
 def save_data_to_sheet(sheet_name, data):
-    logging.info("Iniciando o salvamento de dados no Google Sheets...")
-
     try:
+        logging.info("Iniciando o salvamento de dados no Google Sheets...")
+
         # Obter o JSON de credenciais da variável de ambiente
         creds_json = os.environ.get("GOOGLE_SHEETS_CREDENTIALS_JSON")
         if not creds_json:
@@ -82,7 +76,7 @@ def save_data_to_sheet(sheet_name, data):
         # Autenticação com credenciais
         creds = Credentials.from_service_account_info(
             creds_info,
-            scopes=["https://www.googleapis.com/auth/spreadsheets"]
+            scopes=["https://www.googleapis.com/auth/spreadsheets"]  # Certifique-se de que este escopo está correto
         )
         
         logging.info("Credenciais de autenticação configuradas.")
