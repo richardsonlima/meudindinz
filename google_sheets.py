@@ -37,3 +37,41 @@ def connect_to_google_sheets(sheet_name):
         raise ConnectionError(f"Erro ao acessar a API do Google Sheets: {api_err}")
     except Exception as e:
         raise RuntimeError(f"Erro ao conectar ao Google Sheets: {e}")
+
+def save_data_to_sheet(sheet_name, data):
+    try:
+        # Obter o JSON de credenciais da variável de ambiente
+        creds_json = os.environ.get("GOOGLE_SHEETS_CREDENTIALS_JSON")
+
+        if not creds_json:
+            raise ValueError("A variável de ambiente 'GOOGLE_SHEETS_CREDENTIALS_JSON' não está definida.")
+
+        # Carregar as credenciais do JSON
+        creds_info = json.loads(creds_json)
+
+        # Autenticação com credenciais
+        creds = Credentials.from_service_account_info(creds_info, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+
+        # Autenticando com gspread
+        client = gspread.authorize(creds)
+
+        # Acessar a planilha
+        spreadsheet = client.open(sheet_name)
+
+        # Selecionar uma aba
+        sheet = spreadsheet.sheet1
+
+        # Limpar os dados existentes na planilha
+        sheet.clear()
+
+        # Atualizar a planilha com novos dados
+        sheet.update([data[0].keys()] + [list(item.values()) for item in data])
+
+        return True
+
+    except gspread.exceptions.SpreadsheetNotFound:
+        raise FileNotFoundError(f"Planilha '{sheet_name}' não encontrada. Verifique o nome da planilha.")
+    except gspread.exceptions.APIError as api_err:
+        raise ConnectionError(f"Erro ao acessar a API do Google Sheets: {api_err}")
+    except Exception as e:
+        raise RuntimeError(f"Erro ao salvar dados no Google Sheets: {e}")
