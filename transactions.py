@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Definir o nome da planilha do Google Sheets
-SHEET_NAME = "meu_dindinz_planilha"  # nome real da planilha
+SHEET_NAME = "meu_dindinz_planilha"  
 
 # Função para cadastrar transações
 def add_transaction(transaction_type, category, description, amount, date):
@@ -33,9 +33,14 @@ def transaction_interface():
             data = connect_to_google_sheets(SHEET_NAME)  # Use a constante SHEET_NAME
             st.info("Conectado à planilha com sucesso!")
             
+            # Verifica se há dados existentes e adiciona a nova transação
+            if isinstance(data, list):
+                data.append(transaction)
+            else:
+                data = [transaction]
+
             # Salvar a transação na planilha do Google Sheets
-            updated_data = data + [dict(zip(["Data", "Tipo", "Categoria", "Descrição", "Valor"], transaction))]
-            if save_data_to_sheet(SHEET_NAME, updated_data):  # Certifique-se de passar os dados como uma lista de listas
+            if save_data_to_sheet(SHEET_NAME, data):  # Certifique-se de passar os dados como uma lista de listas
                 st.success("Transação adicionada e salva na planilha com sucesso!")
         except Exception as e:
             st.error(f"Erro ao acessar a planilha: {e}")
