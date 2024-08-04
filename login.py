@@ -105,7 +105,7 @@ def google_login():
         </style>
         """
 
-        # Imagem da logo em base64
+        # Imagem da logo em base64 (lembre-se de substituir essa string pela correta)
         logo_base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAACtKy84AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAA..."
 
         # HTML para a tela de login
@@ -113,10 +113,10 @@ def google_login():
         <div class="login-container">
             <img src="{logo_base64}" alt="Logo Meu DinDinz" class="logo">
             <h1 class="login-header">Meu DinDinz</h1>
-            <button class="google-button" onclick="window.location.href='{authorization_url}'">
+            <a class="google-button" href="{authorization_url}">
                 <img class="google-icon" src="https://www.google.com/favicon.ico" alt="Google icon" width="20" height="20">
                 Entrar com Google
-            </button>
+            </a>
             <div class="sub-text">Acesse sua conta com segurança</div>
             <div class="footer">© 2024 Meu DinDinz. Todos os direitos reservados.</div>
         </div>
