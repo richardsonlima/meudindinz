@@ -41,7 +41,7 @@ def google_login():
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "openid"
             ],
-            redirect_uri="http://localhost:8501"  # Substitua pela URL correta que você está usando
+            redirect_uri= os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
         )
 
         authorization_url, state = flow.authorization_url(prompt='consent')
