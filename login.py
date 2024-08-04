@@ -78,12 +78,13 @@ def google_login():
                     user_info = session.get('https://www.googleapis.com/userinfo/v2/me', headers=headers).json()
 
                     st.session_state['user_info'] = user_info  # Armazenar informações do usuário na sessão
-                    st.success("Login realizado com sucesso!")
                     st.experimental_rerun()  # Recarrega a aplicação após login para renderizar a interface principal
                 except Exception as e:
                     st.error(f"Erro ao obter token: {e}")
         else:
             st.error("Configurações de OAuth inválidas.")
+    else:
+        show_main_app()  # Se já estiver logado, mostra a aplicação
 
 # Função principal para mostrar a aplicação após o login
 def show_main_app():
@@ -117,14 +118,6 @@ def show_main_app():
         security.security_interface()
     elif selection == "Integração com Google Sheets":
         google_sheets.google_sheets_interface()
-
-def login_required():
-    # Se o usuário já está logado, mostra a aplicação principal
-    if 'user_info' in st.session_state:
-        show_main_app()
-    else:
-        # Caso contrário, mostra a tela de login
-        google_login()
 
 if __name__ == "__main__":
     st.set_page_config(page_title="Meu DinDinz", layout="wide")
@@ -215,5 +208,5 @@ if __name__ == "__main__":
         </style>
     """, unsafe_allow_html=True)
 
-    # Função para verificar login
-    login_required()
+    # Chama a função de login, se necessário
+    google_login()
