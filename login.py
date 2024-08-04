@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
+
 # Configurar o ambiente do Google OAuth
 def load_google_oauth():
     try:
@@ -40,27 +41,14 @@ def google_login():
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "openid"
             ],
-            redirect_uri=os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
+            redirect_uri= os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
         )
 
         authorization_url, state = flow.authorization_url(prompt='consent')
 
-        # Estrutura HTML do botão de login
-        st.markdown(f"""
-            <div class="login-container">
-                <div class="login-form">
-                    <h2>Login para continuar</h2>
-                    <p>Bem-vindo de volta!</p>
-                    <a href="{authorization_url}" class="google-button">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Logo">
-                        Entrar com Google
-                    </a>
-                </div>
-                <div class="illustration">
-                    <img src="https://via.placeholder.com/600x400" alt="Ilustração">
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.write("## Bem-vindo ao Meu DinDinz")
+        st.write("Por favor, faça login para continuar.")
+        st.write(f"[Entrar com Google]({authorization_url})")
 
         # Obter o código de autorização a partir dos parâmetros da URL
         query_params = st.experimental_get_query_params()
@@ -110,102 +98,10 @@ def show_main_app():
 
 if __name__ == "__main__":
     st.set_page_config(page_title="Meu DinDinz", layout="wide")
-
-    # CSS styles
-    st.markdown("""
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f4f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 1100px;
-            width: 100%;
-            margin: auto;
-            overflow: hidden;
-        }
-
-        .login-form {
-            flex: 1;
-            padding: 60px;
-            text-align: center;
-            background-color: #e6eef5;
-            border-radius: 12px 0 0 12px;
-        }
-
-        .login-form h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .login-form p {
-            color: #555;
-            margin-bottom: 30px;
-        }
-
-        .google-button {
-            background-color: #4285f4;
-            color: white;
-            font-size: 18px;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-decoration: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .google-button:hover {
-            background-color: #357ae8;
-            transform: translateY(-2px);
-        }
-
-        .google-button img {
-            width: 20px;
-            height: 20px;
-        }
-
-        .illustration {
-            flex: 1;
-            padding: 60px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f9f9f9;
-            border-radius: 0 12px 12px 0;
-        }
-
-        .illustration img {
-            width: 100%;
-            height: auto;
-        }
-
-        </style>
-    """, unsafe_allow_html=True)
-
+    
     # Checar se o usuário já está logado
     if 'user_info' not in st.session_state:
         if google_login():
-            st.experimental_rerun()
+            show_main_app()
     else:
         show_main_app()
