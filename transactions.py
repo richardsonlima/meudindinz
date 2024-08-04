@@ -28,7 +28,7 @@ def transaction_interface():
         transaction = add_transaction(transaction_type, category, description, amount, date)
         
         # Salvar a transação na planilha do Google Sheets
-        sheet_name = "Meu DinDinz"  # Substitua pelo nome real da planilha
+        sheet_name = sheet_name  # Substitua pelo nome real da planilha
         sheet = connect_to_google_sheets(sheet_name)
         
         if sheet:
