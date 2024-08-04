@@ -30,17 +30,23 @@ def transaction_interface():
         
         # Conectar à planilha do Google Sheets
         try:
-            data = connect_to_google_sheets(SHEET_NAME)  # Use a constante SHEET_NAME
+            # Conectar à planilha e obter os dados existentes
+            data = connect_to_google_sheets(SHEET_NAME)
             st.info("Conectado à planilha com sucesso!")
             
+            # Formatar os dados existentes e a nova transação para salvar
+            headers = ["Data", "Tipo", "Categoria", "Descrição", "Valor"]
+            
             # Verifica se há dados existentes e adiciona a nova transação
-            if isinstance(data, list):
-                data.append(transaction)
+            if isinstance(data, list) and len(data) > 0:
+                # Adiciona a nova transação aos dados existentes
+                updated_data = [list(item.values()) for item in data] + [transaction]
             else:
-                data = [transaction]
-
+                # Caso não haja dados, inicializa com o cabeçalho e a nova transação
+                updated_data = [headers, transaction]
+            
             # Salvar a transação na planilha do Google Sheets
-            if save_data_to_sheet(SHEET_NAME, data):  # Certifique-se de passar os dados como uma lista de listas
+            if save_data_to_sheet(SHEET_NAME, updated_data):
                 st.success("Transação adicionada e salva na planilha com sucesso!")
         except Exception as e:
             st.error(f"Erro ao acessar a planilha: {e}")
