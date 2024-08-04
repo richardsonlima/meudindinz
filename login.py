@@ -3,8 +3,8 @@ import json
 import requests
 from google_auth_oauthlib.flow import Flow
 import os
-
-# Importar os módulos
+#from dotenv import load_dotenv
+# Importar os módulos necessários
 import transactions
 import budget_overview
 import financial_reports
@@ -13,18 +13,20 @@ import notifications
 import security
 import google_sheets
 
-from dotenv import load_dotenv
+# Carregar variáveis de ambiente do arquivo .env se estiver usando localmente
+# Caso esteja usando no Streamlit Cloud, configure as variáveis no painel de configuração
+# from dotenv import load_dotenv
+# load_dotenv()
 
-# Carregar variáveis de ambiente do arquivo .env
-load_dotenv()
-
-
-# Configurar o ambiente do Google OAuth
+# Função para carregar as credenciais do Google OAuth a partir das variáveis de ambiente
 def load_google_oauth():
     try:
-        # Carregar credenciais de uma variável de ambiente
+        # Carregar credenciais a partir de uma variável de ambiente
         client_secret_json = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET", "{}")
         return json.loads(client_secret_json)
+    except json.JSONDecodeError as e:
+        st.error(f"Erro ao decodificar as credenciais do Google OAuth: {e}")
+        return None
     except Exception as e:
         st.error(f"Erro ao carregar as credenciais do Google OAuth: {e}")
         return None
@@ -41,7 +43,7 @@ def google_login():
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "openid"
             ],
-            redirect_uri= os.environ.get("APP_URI")  # Substitua pela URL correta que você está usando
+            redirect_uri=os.environ.get("APP_URI")  # URL correta que você está usando
         )
 
         authorization_url, state = flow.authorization_url(prompt='consent')
@@ -67,11 +69,14 @@ def google_login():
 
                 st.session_state['user_info'] = user_info  # Armazenar informações do usuário na sessão
                 st.success("Login realizado com sucesso!")
+                # Redirecionar para a aplicação principal após login bem-sucedido
+                st.experimental_rerun()
                 return True
             except Exception as e:
                 st.error(f"Erro ao obter token: {e}")
     return False
 
+# Função para exibir a aplicação principal
 def show_main_app():
     st.sidebar.title("Navegação")
     selection = st.sidebar.radio("Ir para", ["Transações", "Visão Geral do Orçamento", "Relatórios Financeiros",
