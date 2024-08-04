@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Definir o nome da planilha do Google Sheets
-SHEET_NAME = "meu_dindinz_planilha"  
+sheet_name = os.environ.get("SHEET_NAME")
 
 # Configurar o ambiente do Google OAuth
 def load_google_oauth():
@@ -100,7 +100,7 @@ def show_main_app():
         google_sheets_interface()
 
 def google_sheets_interface():
-    sheet_name = st.text_input("Nome da Planilha no Google Sheets", SHEET_NAME)
+    sheet_name = st.text_input("Nome da Planilha no Google Sheets", sheet_name)
 
     if st.button("Conectar ao Google Sheets"):
         try:

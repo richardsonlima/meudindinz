@@ -9,7 +9,7 @@ from datetime import datetime
 load_dotenv()
 
 # Definir o nome da planilha do Google Sheets
-SHEET_NAME = "meu_dindinz_planilha"  # Substitua "nome_da_sua_planilha" pelo nome real da sua planilha
+sheet_name = os.environ.get("SHEET_NAME")
 
 # Função para cadastrar transações
 def add_transaction(transaction_type, category, description, amount, date):
@@ -31,7 +31,7 @@ def transaction_interface():
         
         # Conectar à planilha do Google Sheets
         try:
-            data = connect_to_google_sheets(SHEET_NAME)
+            data = connect_to_google_sheets(sheet_name)
             st.info("Conectado à planilha com sucesso!")
             
             # Adicionar a nova transação aos dados existentes
@@ -44,7 +44,7 @@ def transaction_interface():
                 data = [headers, transaction]
 
             # Salvar a transação na planilha do Google Sheets
-            if save_data_to_sheet(SHEET_NAME, data):
+            if save_data_to_sheet(sheet_name, data):
                 st.success("Transação adicionada e salva na planilha com sucesso!")
         except Exception as e:
             st.error(f"Erro ao acessar a planilha: {e}")
