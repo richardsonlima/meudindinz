@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Definir o nome da planilha do Google Sheets
-SHEET_NAME = "meu_dindinz_planilha-v2"  # nome real da planilha
+SHEET_NAME = "meu_dindinz_planilha"  # nome real da planilha
 
 # Função para cadastrar transações
 def add_transaction(transaction_type, category, description, amount, date):
