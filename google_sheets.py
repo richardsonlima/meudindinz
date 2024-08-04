@@ -1,14 +1,13 @@
-import os
 import json
+import os
+from dotenv import load_dotenv
 import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
-from dotenv import load_dotenv
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# Função para conectar ao Google Sheets
 def connect_to_google_sheets(sheet_name):
     try:
         # Carregar credenciais da variável de ambiente
@@ -34,7 +33,6 @@ def connect_to_google_sheets(sheet_name):
         st.error(f"Erro ao conectar ao Google Sheets: {e}")
         return None
 
-# Função para salvar dados no Google Sheets
 def save_data_to_sheet(sheet, data):
     try:
         sheet.append_row(data)
@@ -42,3 +40,13 @@ def save_data_to_sheet(sheet, data):
     except Exception as e:
         st.error(f"Erro ao salvar dados no Google Sheets: {e}")
 
+# Defina a função google_sheets_interface se ela for necessária
+def google_sheets_interface():
+    st.title("Integração com Google Sheets")
+    
+    sheet_name = st.text_input("Nome da Planilha no Google Sheets")
+    if st.button("Conectar"):
+        sheet = connect_to_google_sheets(sheet_name)
+        if sheet:
+            st.success("Conectado com sucesso!")
+            st.write(sheet.get_all_records())  # Exibir todos os registros como exemplo
