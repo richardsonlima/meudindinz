@@ -4,113 +4,117 @@ import os
 import json
 import logging
 
-# Configuração do logger
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 
 def connect_to_google_sheets(sheet_name):
     try:
-        logging.info("Iniciando a conexão com o Google Sheets...")
+        logging.info("Starting connection to Google Sheets...")
 
-        sheet_name = os.environ.get("PLANILHA_DINDINZ")
-
-        # Obter o JSON de credenciais da variável de ambiente
+        # Get credentials from environment variable
         creds_json = os.environ.get("GOOGLE_SHEETS_CREDENTIALS_JSON")
         if not creds_json:
-            raise ValueError("A variável de ambiente 'GOOGLE_SHEETS_CREDENTIALS_JSON' não está definida.")
+            raise ValueError("Environment variable 'GOOGLE_SHEETS_CREDENTIALS_JSON' is not set.")
         
-        logging.info("Credenciais JSON obtidas com sucesso.")
+        logging.info("JSON credentials obtained successfully.")
         
-        # Carregar as credenciais do JSON
+        # Load credentials from JSON
         creds_info = json.loads(creds_json)
-        logging.info("Credenciais JSON carregadas e analisadas.")
+        logging.info("JSON credentials loaded and parsed.")
         
-        # Autenticação com credenciais
+        # Authenticate with credentials
         creds = Credentials.from_service_account_info(
             creds_info,
-            scopes=["https://www.googleapis.com/auth/spreadsheets"]  # Certifique-se de que este escopo está correto
+            scopes=["https://www.googleapis.com/auth/spreadsheets"]
         )
         
-        logging.info("Credenciais de autenticação configuradas.")
+        logging.info("Authentication credentials configured.")
         
-        # Autenticando com gspread
+        # Authenticate with gspread
         client = gspread.authorize(creds)
         
-        logging.info("Autenticado com sucesso no Google Sheets.")
+        logging.info("Successfully authenticated with Google Sheets.")
         
-        # Acessar a planilha
+        # Access the spreadsheet
         spreadsheet = client.open(sheet_name)
-        logging.info(f"Acesso à planilha '{sheet_name}' concluído.")
+        logging.info(f"Access to spreadsheet '{sheet_name}' completed.")
         
-        # Selecionar uma aba
+        # Select the first sheet
         sheet = spreadsheet.sheet1
         
-        # Ler todos os dados
+        # Get all records
         data = sheet.get_all_records()
         
-        logging.info(f"Dados da planilha '{sheet_name}' carregados com sucesso.")
+        logging.info(f"Data from spreadsheet '{sheet_name}' loaded successfully.")
         return data
 
     except gspread.exceptions.SpreadsheetNotFound:
-        logging.error(f"Planilha '{sheet_name}' não encontrada. Verifique o nome da planilha.")
-        raise FileNotFoundError(f"Planilha '{sheet_name}' não encontrada. Verifique o nome da planilha.")
+        logging.error(f"Spreadsheet '{sheet_name}' not found. Please check the spreadsheet name.")
+        raise FileNotFoundError(f"Spreadsheet '{sheet_name}' not found. Please check the spreadsheet name.")
     except gspread.exceptions.APIError as api_err:
-        logging.error(f"Erro ao acessar a API do Google Sheets: {api_err}")
-        raise ConnectionError(f"Erro ao acessar a API do Google Sheets: {api_err}")
+        logging.error(f"Error accessing Google Sheets API: {api_err}")
+        raise ConnectionError(f"Error accessing Google Sheets API: {api_err}")
     except Exception as e:
-        logging.error(f"Erro ao conectar ao Google Sheets: {e}")
-        raise RuntimeError(f"Erro ao conectar ao Google Sheets: {e}")
+        logging.error(f"Error connecting to Google Sheets: {e}")
+        raise RuntimeError(f"Error connecting to Google Sheets: {e}")
 
 def save_data_to_sheet(sheet_name, data):
     try:
-        logging.info("Iniciando o salvamento de dados no Google Sheets...")
+        logging.info("Starting to save data to Google Sheets...")
 
-        # Obter o JSON de credenciais da variável de ambiente
+        # Get credentials from environment variable
         creds_json = os.environ.get("GOOGLE_SHEETS_CREDENTIALS_JSON")
         if not creds_json:
-            raise ValueError("A variável de ambiente 'GOOGLE_SHEETS_CREDENTIALS_JSON' não está definida.")
+            raise ValueError("Environment variable 'GOOGLE_SHEETS_CREDENTIALS_JSON' is not set.")
         
-        logging.info("Credenciais JSON obtidas com sucesso.")
+        logging.info("JSON credentials obtained successfully.")
 
-        # Carregar as credenciais do JSON
+        # Load credentials from JSON
         creds_info = json.loads(creds_json)
-        logging.info("Credenciais JSON carregadas e analisadas.")
+        logging.info("JSON credentials loaded and parsed.")
         
-        # Autenticação com credenciais
+        # Authenticate with credentials
         creds = Credentials.from_service_account_info(
             creds_info,
-            scopes=["https://www.googleapis.com/auth/spreadsheets"]  # Certifique-se de que este escopo está correto
+            scopes=["https://www.googleapis.com/auth/spreadsheets"]
         )
         
-        logging.info("Credenciais de autenticação configuradas.")
+        logging.info("Authentication credentials configured.")
         
-        # Autenticando com gspread
+        # Authenticate with gspread
         client = gspread.authorize(creds)
         
-        logging.info("Autenticado com sucesso no Google Sheets.")
+        logging.info("Successfully authenticated with Google Sheets.")
         
-        # Acessar a planilha
+        # Access the spreadsheet
         spreadsheet = client.open(sheet_name)
-        logging.info(f"Acesso à planilha '{sheet_name}' concluído.")
+        logging.info(f"Access to spreadsheet '{sheet_name}' completed.")
 
-        # Selecionar uma aba
+        # Select the first sheet
         sheet = spreadsheet.sheet1
         
-        # Limpar os dados existentes na planilha
+        # Clear existing data
         sheet.clear()
-        logging.info(f"Dados anteriores na planilha '{sheet_name}' foram apagados.")
+        logging.info(f"Previous data in spreadsheet '{sheet_name}' has been cleared.")
         
-        # Atualizar a planilha com novos dados
+        # Update the sheet with new data
         sheet.update([data[0].keys()] + [list(item.values()) for item in data])
-        logging.info(f"Novos dados foram salvos com sucesso na planilha '{sheet_name}'.")
+        logging.info(f"New data successfully saved to spreadsheet '{sheet_name}'.")
         
         return True
 
     except gspread.exceptions.SpreadsheetNotFound:
-        logging.error(f"Planilha '{sheet_name}' não encontrada. Verifique o nome da planilha.")
-        raise FileNotFoundError(f"Planilha '{sheet_name}' não encontrada. Verifique o nome da planilha.")
+        logging.error(f"Spreadsheet '{sheet_name}' not found. Please check the spreadsheet name.")
+        raise FileNotFoundError(f"Spreadsheet '{sheet_name}' not found. Please check the spreadsheet name.")
     except gspread.exceptions.APIError as api_err:
-        logging.error(f"Erro ao acessar a API do Google Sheets: {api_err}")
-        raise ConnectionError(f"Erro ao acessar a API do Google Sheets: {api_err}")
+        logging.error(f"Error accessing Google Sheets API: {api_err}")
+        raise ConnectionError(f"Error accessing Google Sheets API: {api_err}")
     except Exception as e:
-        logging.error(f"Erro ao salvar dados no Google Sheets: {e}")
-        raise RuntimeError(f"Erro ao salvar dados no Google Sheets: {e}")
+        logging.error(f"Error saving data to Google Sheets: {e}")
+        raise RuntimeError(f"Error saving data to Google Sheets: {e}")
+
+if __name__ == "__main__":
+    # Example use case
+    sheet_name = "Your_Spreadsheet_Name"
+    data = connect_to_google_sheets(sheet_name)
+    print(data)
